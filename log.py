@@ -1,27 +1,26 @@
 import logging
 
-
 class Logger:
-    def __init__(self, log_file: str, filemode: str, debug_level: logging._Level) -> None:
-        logging.basicConfig(filename=log_file, filemode=filemode, level=debug_level,
-                            format="[%(asctime)s] %(levelname)s %(message)s")
+    def __init__(self, log_file: str = __name__, filemode: str = 'a', debug_level = logging.DEBUG) -> None:
+        logger = logging.getLogger(__name__)
+        logger.setLevel(debug_level)
+        handler = logging.FileHandler(f'{log_file}.log', filemode)
+        formatter = logging.Formatter("[%(asctime)s] %(levelname)s %(message)s")
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+        self.logger = logger
 
-    @staticmethod
-    def send_debug(msg: str) -> None:
-        logging.debug(msg)
+    def debug(self, msg: str) -> None:
+        self.logger.debug(msg)
 
-    @staticmethod
-    def send_info(msg: str) -> None:
-        logging.info(msg)
+    def info(self, msg: str) -> None:
+        self.logger.info(msg)
 
-    @staticmethod
-    def send_warn(msg: str) -> None:
-        logging.warning(msg)
+    def warning(self, msg: str) -> None:
+        self.logger.warning(msg)
 
-    @staticmethod
-    def send_error(msg: str) -> None:
-        logging.error(msg)
+    def error(self, msg: str) -> None:
+        self.logger.error(msg)
 
-    @staticmethod
-    def send_critical(msg: str) -> None:
-        logging.critical(msg)
+    def critical(self, msg: str) -> None:
+        self.logger.critical(msg)
