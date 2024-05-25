@@ -31,7 +31,7 @@ async def command_referal(message: Message) -> None:
     await message.answer(f"Your referal link: {ref_link}")
 
 
-async def main():
+async def main() -> None:
     dp.include_router(router)
     await dp.start_polling(bot)
 
