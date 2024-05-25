@@ -11,11 +11,11 @@ class Database:
         self.db_path = db_path
         self.logger = Logger("db")
 
-    async def add_new_user(self, table_name: str, user_id: str, parent: str = 0) -> None:
+    async def add_new_user(self, table_name: str, user_id: str, parent: str = 0) -> None|int:
         values: list[str] = [i[0] for i in await self.get_all_users("main")]
         if user_id in values:
-            self.logger.info("id already presented!")
-            return
+            self.logger.info(f"user {user_id} already presented!")
+            return -1
         else:
             db = await asql.connect(self.db_path)
             await db.execute(f"INSERT INTO {table_name}(user_id, referals, parent) VALUES({user_id}, 0, {parent})")

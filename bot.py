@@ -18,8 +18,8 @@ bot = Bot(TOKEN)
 async def command_start_dl(message: Message, command: CommandObject) -> None:
     args = command.args
     payload = decode_payload(args)
-    await db.add_new_user("main", str(message.from_user.id), payload)
-    await db.add_referal("main", payload)
+    if await db.add_new_user("main", str(message.from_user.id), payload) != -1:
+        await db.add_referal("main", payload)
 
 @router.message(Command("start"))
 async def command_start(message: Message) -> None:
