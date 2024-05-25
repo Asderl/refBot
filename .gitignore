@@ -1,5 +1,4 @@
 bot_token.py
-database/
 __pychache__/
 *.py[cod]
 *.db

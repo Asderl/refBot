@@ -14,22 +14,21 @@ table_name = "main"
 db = Database("database", "referals")
 bot = Bot(TOKEN)
 
-@router.message(CommandStart(deep_link=True, deep_link_encoded=True))
-async def command_start(message: Message, command: CommandObject) -> None:
+@router.message(CommandStart(deep_link=True))
+async def command_start_dl(message: Message, command: CommandObject) -> None:
     args = command.args
-    if args != None:
-        db.add_new_user("main", str(message.from_user.id))
-    else:
-        payload = decode_payload(args)
-        await db.add_new_user("main", str(message.from_user.id))
+    payload = decode_payload(args)
+    await db.add_new_user("main", str(message.from_user.id), payload)
+    await db.add_referal("main", payload)
+
+@router.message(Command("start"))
+async def command_start(message: Message) -> None:
+    await db.add_new_user("main", str(message.from_user.id))
 
 @router.message(Command("ref"))
 async def command_referal(message: Message) -> None:
-    ref_link = await gen_ref(message.from_user.id)
-    message.answer(f"Your referal link: {ref_link}")
-
-async def gen_ref(user_id: str) -> str:
-    return await create_start_link(bot, user_id, encode=True)
+    ref_link = await create_start_link(bot, message.from_user.id, encode=True)
+    await message.answer(f"Your referal link: {ref_link}")
 
 
 async def main():

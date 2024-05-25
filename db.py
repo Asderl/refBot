@@ -11,14 +11,14 @@ class Database:
         self.db_path = db_path
         self.logger = Logger("db")
 
-    async def add_new_user(self, table_name: str, user_id: str) -> None:
+    async def add_new_user(self, table_name: str, user_id: str, parent: str = 0) -> None:
         values: list[str] = [i[0] for i in await self.get_all_users("main")]
         if user_id in values:
             self.logger.info("id already presented!")
             return
         else:
             db = await asql.connect(self.db_path)
-            await db.execute(f"INSERT INTO {table_name}(user_id, referals) VALUES({user_id}, 0)")
+            await db.execute(f"INSERT INTO {table_name}(user_id, referals, parent) VALUES({user_id}, 0, {parent})")
             await db.commit()
             await db.close()
 
@@ -28,3 +28,19 @@ class Database:
         values = await cursor.fetchall()
         await db.close()
         return values
+
+    async def get_parent(self, table_name: str, user_id: str) -> str|None:
+        values: list[str] = [i[0] for i in await self.get_all_users("main")]
+        if user_id in values:
+            db = await asql.connect(self.db_path)
+            cursor = await db.execute(f"SELECT parent FROM {table_name} WHERE user_id = {user_id}")
+            parent = await cursor.fetchone()
+            await db.close()
+            self.logger.debug(parent[0])
+            return parent[0]
+
+    async def add_referal(self, table_name: str, parent: str) -> None:
+        db = await asql.connect(self.db_path)
+        await db.execute(f"UPDATE {table_name} SET referals = referals + 1 WHERE user_id = {parent}")
+        await db.commit()
+        await db.close()
