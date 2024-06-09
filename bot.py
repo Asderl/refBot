@@ -52,6 +52,12 @@ async def command_newwallet(message: Message) -> None:
     await db.add_wallet(table_name, str(message.from_user.id), str(message.text.split()[1]))
     await message.answer(f"You added new wallet")
 
+#Handler for /balance command - view user balance
+@router.message(Command("balance"))
+async def command_wallet(message: Message) -> None:
+    ref_count = await db.get_ref_count(table_name, str(message.from_user.id))
+    await message.answer(f"Your balance: {ref_count*200}")
+
 #Main function - start bot polling
 async def main() -> None:
     dp.include_router(router)
