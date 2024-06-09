@@ -68,3 +68,18 @@ class Database:
         ref_count = await cursor.fetchone()
         await db.close()
         return ref_count[0]
+
+    #Get user wallet
+    async def get_wallet(self, table_name: str, user_id: str) -> str:
+        db = await asql.connect(self.db_path)
+        cursor = await db.execute(f"SELECT wallet FROM {table_name} WHERE user_id={user_id}")
+        wallet = await cursor.fetchone()
+        await db.close()
+        return wallet[0]
+
+    #Add new wallet
+    async def add_wallet(self, table_name: str, user_id: str, wallet: str) -> None:
+        db = await asql.connect(self.db_path)
+        await db.execute(f"UPDATE {table_name} SET wallet='{wallet}' WHERE user_id={user_id}")
+        await db.commit()
+        await db.close()

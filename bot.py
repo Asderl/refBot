@@ -39,6 +39,19 @@ async def command_referal(message: Message) -> None:
     ref_count = await db.get_ref_count(table_name, str(message.from_user.id))
     await message.answer(f"Your referrals: {ref_count}\nYour referral link: {ref_link}")
 
+#Handler for /wallet command - show wallet address
+@router.message(Command("wallet"))
+async def command_wallet(message: Message) -> None:
+    wallet = await db.get_wallet(table_name, str(message.from_user.id))
+    if (wallet): await message.answer(f"Your wallet: {wallet}")
+    else: await message.answer(f"You doesn't have a wallet.\n /newwallet [wallet_address] to add new")
+
+#Handler for /newwallet command - add a new wallet
+@router.message(Command("newwallet"))
+async def command_newwallet(message: Message) -> None:
+    await db.add_wallet(table_name, str(message.from_user.id), str(message.text.split()[1]))
+    await message.answer(f"You added new wallet")
+
 #Main function - start bot polling
 async def main() -> None:
     dp.include_router(router)
